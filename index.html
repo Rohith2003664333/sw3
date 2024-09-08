@@ -186,7 +186,7 @@
                             document.getElementById('locationCity').innerHTML = `<font color="green">Location</font>: ${fullAddress}`;
 
                             // Fetch crime alert based on city
-                            fetch(`http://192.168.43.248:8080/getCrimeAlert?city=${city}`)
+                            fetch(`http://192.168.43.248:5050/getCrimeAlert?city=${city}`)
                                 .then(response => response.json())
                                 .then(alertData => {
                                     document.getElementById('crimeAlert').innerHTML = `<font color="green">Crime Zone Alert</font>: ${alertData.alert}`;
@@ -215,7 +215,7 @@
                     const longitude = position.coords.longitude;
 
                     // Send the location to Flask running on localhost
-                    fetch('http://127.0.0.1:5050/emergency', {
+                    fetch('http://192.168.43.248:5050/emergency', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -244,7 +244,7 @@
 
         // Function to start recording and get number of people
         function startRecording() {
-            fetch('http://127.0.0.1:5050/start_recording', {
+            fetch('http://192.168.43.248:5050/start_recording', {
                 method: 'POST',
             })
             .then(response => response.json())
