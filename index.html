@@ -186,7 +186,7 @@
                             document.getElementById('locationCity').innerHTML = `<font color="green">Location</font>: ${fullAddress}`;
 
                             // Fetch crime alert based on city
-                            fetch(`http://127.0.0.1:5000/getCrimeAlert?city=${city}`)
+                            fetch(`http://127.0.0.1:5050/getCrimeAlert?city=${city}`)
                                 .then(response => response.json())
                                 .then(alertData => {
                                     document.getElementById('crimeAlert').innerHTML = `<font color="green">Crime Zone Alert</font>: ${alertData.alert}`;
@@ -215,7 +215,7 @@
                     const longitude = position.coords.longitude;
 
                     // Send the location to Flask running on localhost
-                    fetch('http://127.0.0.1:5000/emergency', {
+                    fetch('http://127.0.0.1:5050/emergency', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -246,7 +246,7 @@
         function startRecording() {
             document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
 
-            fetch('http://127.0.0.1:5000/start_recording', {
+            fetch('http://127.0.0.1:5050/start_recording', {
                 method: 'POST',
             })
             .then(response => response.json())
@@ -263,7 +263,7 @@
         // Function to poll the backend for the number of people
         function pollForPeopleCount() {
             const interval = setInterval(() => {
-                fetch('http://127.0.0.1:5000/get_people_count')
+                fetch('http://127.0.0.1:5050/get_people_count')
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'completed') {
