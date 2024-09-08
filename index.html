@@ -211,8 +211,14 @@
         function sendLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+                
+                     // Reverse geocode the location using Nominatim
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            var address = data.display_name || 'Address not found';
 
                     // Send the location to Flask running on localhost
                     fetch('http://127.0.0.1:5050/emergency', {
@@ -223,17 +229,21 @@
                         body: JSON.stringify({
                             latitude: latitude,
                             longitude: longitude,
-                            address: document.getElementById('locationCity').innerText
+                            address:address
                         })
                     })
                     .then(response => response.json())
-                    .then(data => {
-                        console.log('Response from backend:', data);
+                    .then(() => {
+                        console.log('Location sent successfully.');
 
                         // Start audio recording and analysis
-                        startRecording();
-                    })
-                    .catch(error => console.error('Error:', error));
+                                startRecording();
+                            })
+                            .catch((error) => {
+                                console.error('Error:', error);
+                            });
+                        })
+                        .catch(error => console.error('Geocoding Error:', error));
                 }, function(error) {
                     console.error("Error Code = " + error.code + " - " + error.message);
                 });
@@ -250,34 +260,23 @@
                 method: 'POST',
             })
             .then(response => response.json())
-            .then(data => {
-                // Check if the recording is started successfully
-                console.log('Recording started:', data);
-                
-                // Poll the backend for the recording status and number of people
-                pollForPeopleCount();
-            })
-            .catch(error => console.error('Error starting recording:', error));
+                .then(data => {
+                    document.getElementById('scanner').style.display = 'none';
+
+                    if (data.num_people) {
+                        document.getElementById('numPeople').innerHTML = `Estimated number of people near you is: <strong>${data.num_people}</strong>. <p>Be cautious and stay safe!</p><br/> <p> <b><small> Note: This data is shared with our authorities including your location </small></b></p>`;
+                    } else {
+                        alert('Failed to estimate the number of people.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing the recording.');
+                });
         }
 
-        // Function to poll the backend for the number of people
-        function pollForPeopleCount() {
-            const interval = setInterval(() => {
-                fetch('http://127.0.0.1:5050/get_people_count')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'completed') {
-                            clearInterval(interval);
-                            document.getElementById('numPeople').innerText = `Number of people detected: ${data.count}`;
-                            document.getElementById('scanner').style.display = 'none'; // Hide the scanner animation
-                        } else {
-                            console.log('Polling:', data);
-                        }
-                    })
-                    .catch(error => console.error('Error polling for people count:', error));
-            }, 5000); // Poll every 5 seconds
-        }
+        // Call displayLocation on page load
+        window.onload = displayLocation;
     </script>
 </body>
 </html>
-
