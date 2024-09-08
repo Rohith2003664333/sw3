@@ -215,7 +215,7 @@
                     const longitude = position.coords.longitude;
 
                     // Send the location to Flask running on localhost
-                    fetch('http://127.0.0.1:5000/emergency', {
+                    fetch('http://192.168.43.248:8080/emergency', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -244,7 +244,7 @@
 
         // Function to start recording and get number of people
         function startRecording() {
-            fetch('http://127.0.0.1:5000/start_recording', {
+            fetch('http://192.168.43.248:8080/start_recording', {
                 method: 'POST',
             })
             .then(response => response.json())
