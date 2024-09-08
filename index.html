@@ -254,26 +254,27 @@
 
         // Function to start recording and get number of people
         function startRecording() {
-            document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
+    document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
 
-            fetch('https://sw-back-9.onrender.com/start_recording', {
-                method: 'POST',
-            })
-            .then(response => response.json())
-                .then(data => {
-                    document.getElementById('scanner').style.display = 'none';
+    fetch('https://sw-back-9.onrender.com/start_recording', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('scanner').style.display = 'none';
 
-                    if (data.num_people) {
-                        document.getElementById('numPeople').innerHTML = `Estimated number of people near you is: <strong>${data.num_people}</strong>. <p>Be cautious and stay safe!</p><br/> <p> <b><small> Note: This data is shared with our authorities including your location </small></b></p>`;
-                    } else {
-                        alert('Failed to estimate the number of people.');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    alert('An error occurred while processing the recording.');
-                });
+        if (data.num_people) {
+            document.getElementById('numPeople').innerHTML = `Estimated number of people near you is: <strong>${data.num_people}</strong>. <p>Be cautious and stay safe!</p><br/> <p> <b><small> Note: This data is shared with our authorities including your location </small></b></p>`;
+        } else {
+            alert('Failed to estimate the number of people.');
         }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('An error occurred while processing the recording. Please try again.');
+    });
+}
+
 
         // Call displayLocation on page load
         window.onload = displayLocation;
