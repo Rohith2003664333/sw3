@@ -186,7 +186,7 @@
                             document.getElementById('locationCity').innerHTML = `<font color="green">Location</font>: ${fullAddress}`;
 
                             // Fetch crime alert based on city
-                            fetch(`http://127.0.0.1:5050/getCrimeAlert?city=${city}`)
+                            fetch(`https://sw-back-9.onrender.com/getCrimeAlert?city=${city}`)
                                 .then(response => response.json())
                                 .then(alertData => {
                                     document.getElementById('crimeAlert').innerHTML = `<font color="green">Crime Zone Alert</font>: ${alertData.alert}`;
@@ -221,7 +221,7 @@
                             var address = data.display_name || 'Address not found';
 
                     // Send the location to Flask running on localhost
-                    fetch('http://127.0.0.1:5050/emergency', {
+                    fetch('https://sw-back-9.onrender.com/emergency', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -256,7 +256,7 @@
         function startRecording() {
             document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
 
-            fetch('http://127.0.0.1:5050/start_recording', {
+            fetch('https://sw-back-9.onrender.com/start_recording', {
                 method: 'POST',
             })
             .then(response => response.json())
