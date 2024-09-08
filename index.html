@@ -120,8 +120,8 @@
             font-weight: bold;
         }
 
-         /* Bottom-left Note */
-         .bottom-left {
+        /* Bottom-left Note */
+        .bottom-left {
             position: absolute;
             bottom: 10px;
             left: 10px;
@@ -186,7 +186,7 @@
                             document.getElementById('locationCity').innerHTML = `<font color="green">Location</font>: ${fullAddress}`;
 
                             // Fetch crime alert based on city
-                            fetch(`http://192.168.43.248:5050/getCrimeAlert?city=${city}`)
+                            fetch(`http://127.0.0.1:5000/getCrimeAlert?city=${city}`)
                                 .then(response => response.json())
                                 .then(alertData => {
                                     document.getElementById('crimeAlert').innerHTML = `<font color="green">Crime Zone Alert</font>: ${alertData.alert}`;
@@ -215,7 +215,7 @@
                     const longitude = position.coords.longitude;
 
                     // Send the location to Flask running on localhost
-                    fetch('http://192.168.43.248:5050/emergency', {
+                    fetch('http://127.0.0.1:5000/emergency', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -244,16 +244,40 @@
 
         // Function to start recording and get number of people
         function startRecording() {
-            fetch('http://192.168.43.248:5050/start_recording', {
+            document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
+
+            fetch('http://127.0.0.1:5000/start_recording', {
                 method: 'POST',
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('numPeople').innerText = `Estimated number of people nearby: ${data.num_people}`;
-                document.getElementById('scanner').style.display = 'block'; // Show the scanner animation
+                // Check if the recording is started successfully
+                console.log('Recording started:', data);
+                
+                // Poll the backend for the recording status and number of people
+                pollForPeopleCount();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error starting recording:', error));
+        }
+
+        // Function to poll the backend for the number of people
+        function pollForPeopleCount() {
+            const interval = setInterval(() => {
+                fetch('http://127.0.0.1:5000/get_people_count')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'completed') {
+                            clearInterval(interval);
+                            document.getElementById('numPeople').innerText = `Number of people detected: ${data.count}`;
+                            document.getElementById('scanner').style.display = 'none'; // Hide the scanner animation
+                        } else {
+                            console.log('Polling:', data);
+                        }
+                    })
+                    .catch(error => console.error('Error polling for people count:', error));
+            }, 5000); // Poll every 5 seconds
         }
     </script>
 </body>
 </html>
+
