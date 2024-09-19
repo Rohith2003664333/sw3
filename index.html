@@ -16,7 +16,7 @@
 
         h1 {
             color: #333;
-            margin-top: 120px; 
+            margin-top: 190px; 
         }
 
         button {
@@ -171,6 +171,11 @@
         <font size="3" color="green">Nearest Police Station</font>: Loading...
     </div>
 
+    <div id="distanceP" style="position: absolute; top: 140px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 5px; border-radius: 5px; font-size: 14px; font-weight: bold;">
+        <font size="3" color="green">Station range</font>: Loading...
+    </div>
+    
+
     <script>
        
         function getNearestPoliceStation(latitude, longitude) {
@@ -197,6 +202,34 @@
             });
         }
 
+        function distance(latitude,longitude){
+            fetch('/distanceP', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ latitude: latitude, longitude: longitude })
+            }) 
+
+            .then(response => response.json()) // Ensure it returns a promise that resolves the data
+            .then(data => {
+                if (data.police_distance) {
+                    document.getElementById('distanceP').innerHTML = `<font color="green">station range</font>: ${data.police_distance} km Away from you`;
+                    
+                } else {
+                    document.getElementById('distanceP').innerHTML = `<font color="green">station range</font>: Not found`;
+                    
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                return null;
+            });
+
+
+
+        }
+
 
         function displayLocationAndCrimeAlert() {
             if (navigator.geolocation) {
@@ -221,6 +254,7 @@
                                 })
                                 .catch(error => console.error('Crime Alert Error:', error));
                                 getNearestPoliceStation(latitude, longitude);
+                                distance(latitude, longitude);
 
                             sendEmergencyLocation(latitude, longitude, fullAddress);
                         })
@@ -269,6 +303,7 @@
 
                             // Fetch the nearest police station contact number
                             getNearestPoliceStation(latitude, longitude).then(contactNumber => {
+                                
                                 if (contactNumber) {
                                     let cleanedContactNumber = contactNumber.replace(/\D/g, '');  // Clean the contact number
 
